@@ -1,0 +1,6 @@
+node_modules/
+.vscode/
+lib/
+yarn.lock
+tsconfig.tsbuildinfo
+.env

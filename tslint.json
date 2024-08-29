@@ -1,0 +1,7 @@
+{
+  "extends": "tslint:recommended",
+  "rules": {
+    "variable-name": false,
+    "no-bitwise": false
+  }
+}
