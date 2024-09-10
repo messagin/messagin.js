@@ -80,7 +80,7 @@ export class Store<T> {
   /**
    * Calls a defined callback function on each element of the Store, and returns a new Store that contains the results.
    * @param callbackfn — A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the Store.
-  */
+   */
   map<V>(callbackfn: (value: T, key: string, store: this) => V): Store<V> {
     const store = new Store<V>();
     for (const [key, value] of this.s) {

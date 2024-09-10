@@ -1,12 +1,12 @@
-import { BaseChat } from "../models/Chat";
+import { Chat } from "../models/Chat";
 import { Message } from "../models/Message";
 import { Internal } from "../client/Internal";
 import { BaseManager } from "./BaseManager";
 
 export class MessageManager extends BaseManager<Message> {
-  private chat: BaseChat;
+  private chat: Chat;
 
-  constructor(chat: BaseChat) {
+  constructor(chat: Chat) {
     super();
     this.chat = chat;
   }

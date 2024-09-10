@@ -1,5 +1,5 @@
 import { Base } from "./Base";
-import { BaseChat } from "./Chat";
+import { Chat } from "./Chat";
 
 interface ApiMessage {
   id: string;
@@ -15,9 +15,9 @@ export class Message extends Base implements ApiMessage {
   chat_id: string;
   content: string;
   flags: number;
-  chat: BaseChat;
+  chat: Chat;
 
-  constructor(message: ApiMessage, chat: BaseChat) {
+  constructor(message: ApiMessage, chat: Chat) {
     super();
     this.chat = chat;
     this.id = message.id;

@@ -1,10 +1,9 @@
 import { SpaceManager } from "../managers/SpaceManager";
 import { UserManager } from "../managers/UserManager";
-import { ChatManager } from "../managers/ChatManager";
 import { UserChatManager } from "../managers/UserChatManager";
 
 import { Space } from "../models/Space";
-import { Chat, SpaceChat, UserChat } from "../models/Chat";
+import { SpaceChat, UserChat } from "../models/Chat";
 
 import { API, Auth } from "./API";
 import { ChatEvent, Emitter, ReadyEvent, SpaceEvent } from "./Emitter";
@@ -39,9 +38,7 @@ export class Client extends Emitter {
 
     this.spaces = new SpaceManager();
     this.users = new UserManager();
-    // todo implement GlobalChatManager to separate concerns
     this.chats = new UserChatManager();
-
 
     Internal.handlers = {
       Ready: this.handleReady.bind(this),

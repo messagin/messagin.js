@@ -51,7 +51,7 @@ export class WebSocketController extends Emitter {
       this.ws.onmessage = async (ev: MessageEvent) => {
         const event = JSON.parse(ev.data.toString()) as WsEvent;
 
-        if (event.op == OpCodes.Authenticate) {
+        if (event.op === OpCodes.Authenticate) {
           this.ws?.send(JSON.stringify({
             op: OpCodes.Authenticate,
             d: {
@@ -63,6 +63,10 @@ export class WebSocketController extends Emitter {
         console.log(event.t!);
         Internal.handlers[event.t!]?.(event.d);
       };
+
+      this.ws.onerror = (ev) => {
+        console.log(ev);
+      }
 
       this.ws.onclose = (ev: CloseEvent) => {
         console.log("WebSocket connection closed");

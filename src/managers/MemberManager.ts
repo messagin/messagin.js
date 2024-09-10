@@ -15,7 +15,6 @@ export class MemberManager extends BaseManager<Member> {
     if (force || !this.store.has(id)) {
       const res = await Internal.API.get(`/spaces/${this.space?.id}/members/${id}/`);
       if (res.status !== 200) return null;
-      console.log(res);
       this.store.set(id, new Member(res.data));
     }
     return this.store.get(id)!;

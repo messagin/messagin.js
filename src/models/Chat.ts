@@ -3,26 +3,24 @@ import { Internal } from "../client/Internal";
 import { Base } from "./Base";
 import { Space } from "./Space";
 
-interface ApiBaseChat {
+interface ApiChat {
   id: string;
   name: string;
   flags: number;
 };
 
-interface ApiChat extends ApiBaseChat {
-  space_id: string;
+interface ApiSpaceChat extends ApiChat {
+  space_id?: string;
 }
 
-interface ApiUserChat extends ApiBaseChat { };
-
-export class BaseChat extends Base implements ApiBaseChat {
+export class Chat extends Base implements ApiChat {
   id: string;
   name: string;
   flags: number;
 
   messages: MessageManager;
 
-  constructor(chat: ApiBaseChat) {
+  constructor(chat: ApiChat) {
     super();
     this.id = chat.id;
     this.name = chat.name;
@@ -37,19 +35,19 @@ export class BaseChat extends Base implements ApiBaseChat {
   }
 }
 
-export class Chat extends BaseChat {
+export class SpaceChat extends Chat {
   space: Space;
-  space_id: string;
+  space_id?: string;
 
-  constructor(chat: ApiChat, space: Space) {
+  constructor(chat: ApiSpaceChat, space: Space) {
     super(chat);
     this.space_id = chat.space_id;
     this.space = space;
   }
 }
 
-export class UserChat extends BaseChat {
-  constructor(chat: ApiUserChat) {
+export class UserChat extends Chat {
+  constructor(chat: ApiChat) {
     super(chat);
   }
 }

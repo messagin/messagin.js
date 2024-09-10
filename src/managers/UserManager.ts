@@ -27,7 +27,7 @@ export class UserManager extends BaseManager<User> {
 // }
 
 
-//? // todo implement fetchAll (users)
+// ? // todo implement fetchAll (users)
 // fetchAll(): void {
 //   fetch all users???
 // }
