@@ -15,7 +15,7 @@ export class Internal {
   protected static WS: WebSocketController;
   protected static client: Client;
 
-  protected static handlers: { [K in EventName]?: (...data: Events[K]) => any } = {};
+  protected static handlers: { [K in EventName]?: (data: Events[K]) => any } = {};
 
   protected static initialize(options: InitializeOptions) {
     Internal.API = options.api;

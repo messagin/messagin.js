@@ -24,7 +24,7 @@ export class MessageManager extends BaseManager<Message> {
     if (!this.chat) return [];
     const res = await Internal.API.get(`/chats/${this.chat.id}/messages/`);
     if (res.status !== 200) return [];
-    for (const message of res.data) {
+    for (const message of res.data.reverse()) {
       this.store.set(message.id, new Message(message, this.chat));
     }
     return Array.from(this.store.values());

@@ -6,12 +6,13 @@ import { Space } from "../models/Space";
 import { SpaceChat, UserChat } from "../models/Chat";
 
 import { API, Auth } from "./API";
-import { ChatEvent, Emitter, ReadyEvent, SpaceEvent } from "./Emitter";
+import { ChatEvent, Emitter, MessageEvent, ReadyEvent, SpaceEvent } from "./Emitter";
 import { WebSocketController } from "./WebsocketController";
 import { Internal } from "./Internal";
+import { Message } from "../models/Message";
 
 export class Client extends Emitter {
-  private auth: Auth;
+  __auth: Auth;
   private API: API;
   private WS: WebSocketController;
   private host: string;
@@ -24,10 +25,10 @@ export class Client extends Emitter {
 
   constructor() {
     super();
-    this.auth = {};
+    this.__auth = {};
     this.API = new API();
     this.WS = new WebSocketController();
-    this.host = "api.chat.webd3vs.xyz";
+    this.host = "api.webd3vs.xyz";
     this.secure = true;
 
     Internal.initialize({
@@ -85,10 +86,10 @@ export class Client extends Emitter {
     );
     if (res.status !== 200) return false;
 
-    this.auth.token = res.data.token;
-    this.auth.prefix = res.data.type;
-    this.API.setAuth(this.auth);
-    this.WS.setAuth(this.auth);
+    this.__auth.token = res.data.token;
+    this.__auth.prefix = res.data.type;
+    this.API.setAuth(this.__auth);
+    this.WS.setAuth(this.__auth);
     this.WS.init();
     return true;
   }
@@ -98,7 +99,7 @@ export class Client extends Emitter {
     data.spaces.forEach(space => {
       this.spaces.store.set(space.id, new Space(space));
     });
-    this.emit("Ready", [data]);
+    this.emit("Ready", data);
   };
   private handleSessionCreate(): void {
 
@@ -111,27 +112,27 @@ export class Client extends Emitter {
   };
   private handleSpaceCreate(data: SpaceEvent): void {
     this.spaces.store.set(data.id, new Space(data));
-    this.emit("SpaceCreate", [data]);
+    this.emit("SpaceCreate", data);
   };
   private handleSpaceUpdate(data: SpaceEvent): void {
     this.spaces.store.set(data.id, new Space(data));
-    this.emit("SpaceUpdate", [data]);
+    this.emit("SpaceUpdate", data);
   };
   private handleSpaceDelete(data: SpaceEvent): void {
     this.spaces.store.delete(data.id);
-    this.emit("SpaceDelete", [data]);
+    this.emit("SpaceDelete", data);
   };
   private handleChatCreate(data: ChatEvent): void {
     if (!data.space_id) {
       this.chats.store.set(data.id, new UserChat(data));
-      this.emit("ChatCreate", [data]);
+      this.emit("ChatCreate", data);
       return;
     }
     const space = this.spaces.store.get(data.space_id);
     if (!space) return;
     space.chats.store.set(data.id, new SpaceChat(data, space));
     this.chats.store.set(data.id, new SpaceChat(data, space));
-    this.emit("ChatCreate", [data]);
+    this.emit("ChatCreate", data);
   };
   private handleChatUpdate(): void {
 
@@ -144,9 +145,14 @@ export class Client extends Emitter {
     const space = this.spaces.store.get(data.space_id!);
     if (!space) return;
     space.chats.store.delete(data.id);
-    this.emit("ChatDelete", [data]);
+    this.emit("ChatDelete", data);
   };
-  private handleMessageCreate(): void {
+  private handleMessageCreate(data: MessageEvent): void {
+    const chat = this.chats.store.get(data.chat_id!);
+    if (!chat) return;
+    const message = new Message(data, chat);
+    chat?.messages.store.set(data.id, message);
+    this.emit("MessageCreate", message);
   };
   private handleMessageUpdate(): void {
 

@@ -72,25 +72,25 @@ export interface ReadyEvent {
 }
 
 export interface Events {
-  Ready: [ReadyEvent];
-  SessionCreate: [SessionCreateEvent];
-  SessionUpdate: [SessionUpdateEvent];
-  SessionDelete: [SessionDeleteEvent];
-  SpaceCreate: [SpaceEvent];
-  SpaceUpdate: [SpaceEvent];
-  SpaceDelete: [SpaceEvent];
-  ChatCreate: [ChatEvent];
-  ChatUpdate: [ChatEvent];
-  ChatDelete: [ChatEvent];
-  MessageCreate: [MessageEvent];
-  MessageUpdate: [MessageEvent];
-  MessageDelete: [MessageEvent];
-  RoleCreate: [RoleEvent];
-  RoleUpdate: [RoleEvent];
-  RoleDelete: [RoleEvent];
-  MemberCreate: [MemberEvent];
-  MemberUpdate: [MemberEvent];
-  MemberDelete: [MemberEvent];
+  Ready: ReadyEvent;
+  SessionCreate: SessionCreateEvent;
+  SessionUpdate: SessionUpdateEvent;
+  SessionDelete: SessionDeleteEvent;
+  SpaceCreate: SpaceEvent;
+  SpaceUpdate: SpaceEvent;
+  SpaceDelete: SpaceEvent;
+  ChatCreate: ChatEvent;
+  ChatUpdate: ChatEvent;
+  ChatDelete: ChatEvent;
+  MessageCreate: MessageEvent;
+  MessageUpdate: MessageEvent;
+  MessageDelete: MessageEvent;
+  RoleCreate: RoleEvent;
+  RoleUpdate: RoleEvent;
+  RoleDelete: RoleEvent;
+  MemberCreate: MemberEvent;
+  MemberUpdate: MemberEvent;
+  MemberDelete: MemberEvent;
 }
 
 export type EventName = keyof Events;
@@ -98,12 +98,12 @@ export type EventName = keyof Events;
 export class Emitter extends Internal {
   private static instance: Emitter | null;
 
-  private listeners: { [K in EventName]?: Map<number, (...args: Events[K]) => void> };
+  private listeners: { [K in EventName]?: Map<number, (data: Events[K]) => void> };
   private freeIds: { [K in EventName]?: number[] };
 
   constructor() {
     super();
-    this.listeners = {} as { [K in EventName]?: Map<number, (...args: Events[K]) => void> };
+    this.listeners = {} as { [K in EventName]?: Map<number, (data: Events[K]) => void> };
     this.freeIds = {} as { [K in EventName]?: number[] };
   }
 
@@ -118,7 +118,7 @@ export class Emitter extends Internal {
     const listeners = this.listeners[eventName];
     if (!listeners || !listeners.size) return false;
     for (const [_, listener] of listeners) {
-      listener?.(...data);
+      listener?.(data);
     }
     return true;
   }
@@ -134,19 +134,19 @@ export class Emitter extends Internal {
     this.freeIds[eventName]?.push(id);
   }
 
-  onAny(callback: (eventName: EventName, ...data: any[]) => void) {
+  onAny(callback: (eventName: EventName, data: any) => void) {
     for (const eventName in this.listeners) {
-      this.on(eventName as EventName, (...data: any[]) => callback(eventName as EventName, ...data));
+      this.on(eventName as EventName, (data: any) => callback(eventName as EventName, data));
     }
   }
 
-  on<K extends EventName = EventName>(eventName: K, callback: (...data: Events[K]) => void) {
+  on<K extends EventName = EventName>(eventName: K, callback: (data: Events[K]) => void) {
     if (!this.listeners[eventName]) {
       this.listeners[eventName] = new Map();
     }
     const id = this.getId(eventName);
     this.listeners[eventName]?.set(id, callback);
-    return this;
+    return id;
   };
 
   off<K extends EventName>(eventName: K, id: number): void {

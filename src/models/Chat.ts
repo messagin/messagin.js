@@ -2,6 +2,7 @@ import { MessageManager } from "../managers/MessageManager";
 import { Internal } from "../client/Internal";
 import { Base } from "./Base";
 import { Space } from "./Space";
+import { Message } from "./Message";
 
 interface ApiChat {
   id: string;
@@ -29,9 +30,10 @@ export class Chat extends Base implements ApiChat {
     this.messages = new MessageManager(this);
   }
 
-  async send(content: string) {
-    if (!content) return;
-    Internal.API.post(`/chats/${this.id}/messages/`, { content });
+  async send(content: string): Promise<Message | null> {
+    if (!content) return null;
+    const response = await Internal.API.post(`/chats/${this.id}/messages/`, { content });
+    return new Message(response.data, this);
   }
 }
 
